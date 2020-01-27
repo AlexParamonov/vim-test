@@ -1,3 +1,5 @@
+let s:root = matchstr(expand('%:h'), '.*/backend/')
+
 if !exists('g:test#javascript#jest#file_pattern')
   let g:test#javascript#jest#file_pattern = '\v(__tests__/.*|(spec|test))\.(js|jsx|coffee|ts|tsx)$'
 endif
@@ -13,9 +15,9 @@ function! test#javascript#jest#build_position(type, position) abort
     if !empty(name)
       let name = '-t '.shellescape(name, 1)
     endif
-    return ['--no-coverage', name, '--', a:position['file']]
+    return ['--no-coverage', name, '-i', a:position['file']]
   elseif a:type ==# 'file'
-    return ['--no-coverage', '--', a:position['file']]
+    return ['--no-coverage', '-i', a:position['file']]
   else
     return []
   endif
@@ -32,7 +34,9 @@ function! test#javascript#jest#build_args(args) abort
 endfunction
 
 function! test#javascript#jest#executable() abort
-  if filereadable('node_modules/.bin/jest')
+  if filereadable('yarn.lock')
+    return 'yarn --cwd ' . s:root . ' jest'
+  elseif filereadable('node_modules/.bin/jest')
     return 'node_modules/.bin/jest'
   else
     return 'jest'
