@@ -1,9 +1,7 @@
 function! test#run(type, arguments) abort
-  echo "run!"
   call s:before_run()
 
   let alternate_file = s:alternate_file()
-  echo "file: ". alternate_file
 
   if test#test_file(expand('%'))
     let position = s:get_position(expand('%'))
@@ -147,7 +145,11 @@ endfunction
 
 function! s:alternate_file() abort
   if exists("*AlternativeFile")
-    return AlternativeFile()
+    let alternate_file = AlternativeFile()
+
+    if filereadable(alternate_file)
+      return alternate_file
+    endif
   endif
 
   if get(g:, 'test#no_alternate') | return '' | endif
