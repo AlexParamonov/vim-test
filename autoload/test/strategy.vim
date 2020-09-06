@@ -3,17 +3,11 @@ function! test#strategy#vimscript(cmd) abort
 endfunction
 
 function! test#strategy#basic(cmd) abort
-  if has('nvim')
-    -tabnew
-    call termopen(a:cmd)
-    startinsert
+  if s:restorescreen()
+    execute '!'.s:pretty_command(a:cmd)
   else
-    if s:restorescreen()
-      execute '!'.s:pretty_command(a:cmd)
-    else
-      execute '!'.a:cmd
-    endif
-  end
+    execute '!'.a:cmd
+  endif
 endfunction
 
 function! test#strategy#make(cmd) abort
